@@ -13,7 +13,7 @@ Replication package for: Flipped Classroom: Effective Teaching for Chaotic Time 
     ```bash
     unzip lorenz96N40_0.05_part1.csv.zip
     unzip lorenz96N40_0.05_part2.csv.zip
-    cat lorenz96N40_0.05_part2.csv lorenz96N40_0.05_part2.csv > lorenz96N40_0.05.csv
+    cat lorenz96N40_0.05_part1.csv lorenz96N40_0.05_part2.csv > lorenz96N40_0.05.csv
     rm lorenz96N40_0.05_part*
     ```
   - go back to root directory
