@@ -68,6 +68,13 @@ if __name__ == '__main__':
                                 'plateau': 10,
                                 'latent_dim': 256,
                                 'output_steps': 182},
+                           'default':
+                               {'dimensions': 3,
+                                'lr': 1e-3,
+                                'gamma': 0.6,
+                                'plateau': 10,
+                                'latent_dim': 256,
+                                'output_steps': 200},
                            }
     datasets = {}
     for dataset in args.dataset:
@@ -90,7 +97,12 @@ if __name__ == '__main__':
         dataset = re.sub(r'.csv$', '', dataset)
         if not override_args:
             override_args = {}
-        hyperparameters = hyperparameter_sets[dataset]
+        if dataset in hyperparameter_sets:
+            hyperparameters = hyperparameter_sets[dataset]
+        else:
+            if not quiet:
+                print(f'[WARNING] Did not find any predefined hyperparameters for {dataset} - using default set as basis.')
+            hyperparameters = hyperparameter_sets['default']
 
         for hp, old in hyperparameters.items():
             if hp in override_args:

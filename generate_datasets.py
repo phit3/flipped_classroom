@@ -1,4 +1,6 @@
 #!/usr/bin/python3
+import argparse
+import os
 from typing import Tuple
 
 import numpy as np
@@ -10,6 +12,11 @@ from typing import Dict, Callable
 
 
 def write_csv(states, file_name: str):
+    if os.path.exists(file_name) and not force:
+        print(f'[ERROR] {file_name} already exists. Please remove/rename it or provide -f/--force to overwrite it.')
+        exit(1)
+    elif os.path.exists(file_name) and force:
+        print(f'[INFO], overwriting dataset in {file_name} with generated data.')
     columns = []
     for i, _ in enumerate(np.transpose(states)):
         columns.append('x_{}'.format(i))
@@ -28,6 +35,7 @@ def hyperroessler(state: Tuple[float, float, float, float], t, a: float = 0.25, 
 
 
 def do_hyperroessler(dt: float, lle: float, limit: float):
+    global force
     initial_state = (-10, -14, 0.3, 29)
     t = np.arange(0.0, limit, dt)
     states = odeint(hyperroessler, initial_state, t)
@@ -47,6 +55,7 @@ def roessler(state: Tuple[float, float, float], t, a: float = 0.2, b: float = 0.
 
 
 def do_roessler(dt: float, lle: float, limit: float):
+    global force
     # Set initial values
     initial_state = (1., 1., 1.)
     t = np.arange(0.0, limit, dt)
@@ -67,6 +76,7 @@ def lorenz(state, t, r: float = 28.0, s: float = 10.0, b: float = 8.0 / 3.0) -> 
 
 
 def do_lorenz(dt: float, lle: float, limit: float):
+    global force
     # Set initial values
     initial_state = (1., 1., 0.0)
     t = np.arange(0., limit, dt)
@@ -91,6 +101,7 @@ def lorenz96(x, t, F: int = 8, N: int = 40):
 
 
 def do_lorenz96(dt: float, lle: float, limit: float, F: int = 8, N: int = 40):
+    global force
     x0 = np.array(
         [4.576779242071500331e-01, 8.057981139137008197e-01, 5.936302860531461612e-01, 7.022680033563672986e-01,
          2.364087735667341761e-02, 9.711322082657990462e-01, 8.099764387303913793e-01, 2.071705633191478491e-03,
@@ -121,6 +132,7 @@ def thomas(state, t, b: float = 0.1):
 
 
 def do_thomas(dt: float, lle: float, limit: int):
+    global force
     initial_state = (0.0, 1.0, 0.0)
     t = np.arange(0., limit, dt)
     states = odeint(thomas, initial_state, t)[1000:]
@@ -132,6 +144,7 @@ def do_thomas(dt: float, lle: float, limit: int):
 
 
 def do_mackeyglass(dt: float, lle: float, limit: float):
+    global force
     beta = 0.2
     gamma = 0.1
     tau = 17
@@ -179,6 +192,12 @@ def plot(xs, ys, zs, caption, save_to=None):
 
 
 if __name__ == '__main__':
+    parser = argparse.ArgumentParser(description='Script to generate different chaotic time series data sets.')
+    parser.add_argument('-f', '--force', dest='force', action='store_true', default=False,
+                        help='use the force to overwrite already existing datasets with the same name as the generated ones.')
+    args = parser.parse_args()
+    force = args.force
+
     systems: Dict[str, Tuple[float, float, Callable]] = {'roessler': (0.12, 0.069, do_roessler),
                                           'lorenz': (0.01, 0.905, do_lorenz),
                                           'lorenz96': (0.05, 1.67, do_lorenz96),
@@ -188,7 +207,7 @@ if __name__ == '__main__':
 
     for system, (dt, lle, fn) in systems.items():
         input_steps = 150.0
-        samples = 100
+        samples = 10000
         output_steps = int(np.ceil(1.0 / lle / dt))
         safety_factor = 5.0
         max_limit = int(samples * (input_steps + output_steps) * safety_factor * dt)

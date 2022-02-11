@@ -6,13 +6,18 @@
   - create data directory
     ```bash
     mkdir data
-    mkdir checkpoint
+    mkdir results
+    ```
+### Install Requirements
+  - use pip3 to install required python3 libraries
+    ```bash
+    pip3 install -r requirements.txt
     ```
 ### Downloading Data
   - entering data directory
-    ````bash
+    ```bash
     cd data
-    ````
+    ```
   - download data from here: https://doi.org/10.7910/DVN/YEIZDT
   - unzip and put together the lorenz96N40 data parts
     ```bash
@@ -38,11 +43,6 @@
   - executing data generation script
     ```bash
     python3 generate_datasets.py
-    ```
-### Install Requirements
-  - use pip
-    ```bash
-    pip3 install -r requirements.txt
     ```
 ## Running Run
 ### In Times of Need
