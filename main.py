@@ -108,7 +108,7 @@ if __name__ == '__main__':
                 old = hyperparameters[hp]
                 if not quiet:
                     print(f'Overriding {hp}: {old} -> {new}.')
-                hyperparameters[hp] = new
+            hyperparameters[hp] = new
 
         for model_name in args.model_class_name:
             try:
