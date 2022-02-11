@@ -219,6 +219,6 @@ if __name__ == '__main__':
         print(f'> ... {int((input_steps + output_steps) * samples * safety_factor)} states')
         print(f'> ... {samples} samples with a safety_factor of {safety_factor}')
         print(f'> ... {input_steps} input_steps')
-        print(f'> ... {output_steps} output_steps')
+        print(f'> ... {output_steps:0d} output_steps')
         _ = fn(dt=dt, lle=lle, limit=max_limit)
         print(50 * '-')
