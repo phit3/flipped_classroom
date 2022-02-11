@@ -100,8 +100,7 @@ if __name__ == '__main__':
         if dataset in hyperparameter_sets:
             hyperparameters = hyperparameter_sets[dataset]
         else:
-            if not quiet:
-                print(f'[WARNING] Did not find any predefined hyperparameters for {dataset} - using default set as basis.')
+            print(f'[WARNING] Did not find any predefined hyperparameters for {dataset} - using default set as basis.')
             hyperparameters = hyperparameter_sets['default']
 
         for hp, old in hyperparameters.items():
