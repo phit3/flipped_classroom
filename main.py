@@ -1,6 +1,7 @@
 #!/usr/bin/python3
 import argparse
 import re
+import json
 
 from model_manager import ModelManager
 from models.tf import TF
@@ -11,25 +12,16 @@ from models.cl_itf import CL_ITF_P_Lin, CL_ITF_P_InvSig, CL_ITF_P_Exp, CL_ITF_D_
 
 if __name__ == '__main__':
     parser = argparse.ArgumentParser(description='Replication package for: Flipped Classroom: Effective Teaching for Chaotic Time Series Forecasting.')
-    parser.add_argument('--models', dest='model_names', action='extend', nargs='+', default=[],
-                        choices=['TF', 'FR', 'CL_CTF_P',
-                                 'CL_DTF_P_Lin', 'CL_DTF_P_InvSig', 'CL_DTF_P_Exp',
-                                 'CL_DTF_D_Lin', 'CL_DTF_D_InvSig', 'CL_DTF_D_Exp',
-                                 'CL_ITF_P_Lin', 'CL_ITF_P_InvSig', 'CL_ITF_P_Exp',
-                                 'CL_ITF_D_Lin', 'CL_ITF_D_InvSig', 'CL_ITF_D_Exp'], help='Model to use.')
-    parser.add_argument('--dataset', dest='dataset', help='Dataset file to be processed.')
-    parser.add_argument('--operation', dest='operation', default='test', choices=['train', 'test'], help='Operation that shall be performed.')
-    parser.add_argument('--lr', dest='lr', type=float, default=None, help='Initial learning rate used for training.')
-    parser.add_argument('--gamma', dest='gamma', type=float, default=None, help='Factor to be applied to the learning rate by the learning rate scheduler.')
-    parser.add_argument('--plateau', dest='plateau', type=int, default=None, help='Plateau or patience used by the learning rate scheduler.')
-    parser.add_argument('--latent-dim', dest='latent_dim', type=int, default=None, help='Latent dimension or state size of the GRUs.')
-    parser.add_argument('--output-steps', dest='output_steps', type=int, default=None, help='Latent dimension or state size of the GRUs.')
-    parser.add_argument('--tag', dest='tag', type=str, default='test', help='Tag that denotes the set of experiments')
-    parser.add_argument('--quiet', dest='quiet', default=False, action='store_true', help='Providing less out prints.')
+    parser.add_argument('-m', '--models', dest='model_class_name', action='extend', nargs='+', default=[],
+                        help='class name(s) of the model(s) to train or test.')
+    parser.add_argument('-o', '--operation', dest='operation', default='test', choices=['train', 'test'], help='operation that shall be performed.')
+
+    parser.add_argument('-d', '--datasets', dest='dataset', action='extend', nargs='+', default=[],
+                        help='datasets to be processed optionally together with the desired hyperparameters in JSON format (e.g. \'{"thomas_0.1_0.055": {"gamma": 0.6, "lr": 1e-3, "plateau": 10, "latent_dim": 256, "output_steps": 182}}\').')
+    parser.add_argument('-t', '--tag', dest='tag', type=str, default='test', help='tag that identifies a set of experiments')
+    parser.add_argument('-q', '--quiet', dest='quiet', default=False, action='store_true', help='reduces noise on your command line.')
 
     args = parser.parse_args()
-
-    dataset = re.sub(r'.csv$', '', args.dataset)
     operation = args.operation
     tag = args.tag
     quiet = args.quiet
@@ -56,7 +48,7 @@ if __name__ == '__main__':
                                 'latent_dim': 256,
                                 'output_steps': 111},
                            'mackeyglass_1.0_0.006':
-                               {'dimensions': 3,
+                               {'dimensions': 1,
                                 'lr': 1e-3,
                                 'gamma': 0.6,
                                 'plateau': 10,
@@ -77,31 +69,46 @@ if __name__ == '__main__':
                                 'latent_dim': 256,
                                 'output_steps': 182},
                            }
+    datasets = {}
+    for dataset in args.dataset:
+        if dataset.startswith('"') or dataset.startswith('{') or dataset.startswith('['):
+            dataset = json.loads(dataset)
+            if type(dataset) is str:
+                datasets[dataset] = {}
+            elif type(dataset) is list:
+                for d in dataset:
+                    datasets[d] = {}
+            elif type(dataset) is dict:
+                for d, v in dataset.items():
+                    datasets[d] = v
+            else:
+                print('Datasets information were not provided adequatly.')
+        else:
+            datasets[dataset] = {}
 
-    override_args = hyperparameter_sets[dataset]
+    for dataset, override_args in datasets.items():
+        dataset = re.sub(r'.csv$', '', dataset)
+        if not override_args:
+            override_args = {}
+        hyperparameters = hyperparameter_sets[dataset]
 
-    if args.lr:
-        print('Overriding lr')
-        override_args['lr'] = args.lr
-    if args.gamma:
-        print('Overriding gamma')
-        override_args['gamma'] = args.gamma
-    if args.plateau:
-        print('Overriding plateau')
-        override_args['plateau'] = args.gamma
-    if args.latent_dim:
-        print('Overriding latent_dim')
-        override_args['latent_dim'] = args.latent_dim
-    if args.output_steps:
-        print('Overriding output_steps')
-        override_args['output_steps'] = args.output_steps
+        for hp, old in hyperparameters.items():
+            if hp in override_args:
+                new = override_args[hp]
+                if not quiet:
+                    print(f'Overriding {hp}: {old} -> {new}.')
+                hyperparameters[hp] = new
 
-    for model_name in args.model_names:
-        model_class = eval(model_name)
-        if quiet:
-            print('Running {} {} operation for {} on {}.'. format(tag, operation, model_name, dataset))
-        mgr = ModelManager(model_class=model_class, dataset=dataset, tag=tag, quiet=quiet)
-        if operation == 'train':
-            mgr.train_model(override_args=override_args)
-        elif operation == 'test':
-            mgr.test_model(override_args=override_args)
+        for model_name in args.model_name:
+            try:
+                model_class = eval(model_name)
+                if not quiet:
+                    print('Running {} {} operation for {} on {}.'. format(tag, operation, model_name, dataset))
+                mgr = ModelManager(model_class=model_class, dataset=dataset, tag=tag, quiet=quiet)
+                if operation == 'train':
+                    mgr.train_model(override_args=hyperparameters)
+                elif operation == 'test':
+                    mgr.test_model(override_args=hyperparameters)
+            except Exception as e:
+                error_type = type(e).__name__
+                print(f'{error_type}: {e}')
