@@ -6,7 +6,6 @@
   - create data directory
     ```bash
     mkdir data
-    mkdir results
     ```
 ### Install Requirements
   - use pip3 to install required python3 libraries
