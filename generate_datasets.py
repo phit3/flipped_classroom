@@ -40,7 +40,7 @@ def do_hyperroessler(dt: float, lle: float, limit: float):
     t = np.arange(0.0, limit, dt)
     states = odeint(hyperroessler, initial_state, t)
 
-    file_name = f'data/genhyperroessler_{dt}_{lle}.csv'
+    file_name = f'data/hyperroessler_{dt}_{lle}.csv'
     write_csv(states, file_name)
 
     return states[:, 0], states[:, 1], states[:, 2], states[:, 3]
@@ -61,7 +61,7 @@ def do_roessler(dt: float, lle: float, limit: float):
     t = np.arange(0.0, limit, dt)
     states = odeint(roessler, initial_state, t)
 
-    file_name = f'data/genroessler_{dt}_{lle}.csv'
+    file_name = f'data/roessler_{dt}_{lle}.csv'
     write_csv(states, file_name)
 
     return states[:, 0], states[:, 1], states[:, 2]
@@ -82,7 +82,7 @@ def do_lorenz(dt: float, lle: float, limit: float):
     t = np.arange(0., limit, dt)
     states = odeint(lorenz, initial_state, t)
 
-    file_name = f'data/genlorenz_{dt}_{lle}.csv'
+    file_name = f'data/lorenz_{dt}_{lle}.csv'
     write_csv(states, file_name)
 
     return states[:, 0], states[:, 1], states[:, 2]
@@ -116,7 +116,7 @@ def do_lorenz96(dt: float, lle: float, limit: float, F: int = 8, N: int = 40):
     t = np.arange(0.0, limit, dt)
     states = odeint(lorenz96, x0, t)
 
-    file_name = f'data/genlorenz96_{dt}_{lle}.csv'
+    file_name = f'data/lorenz96_{dt}_{lle}.csv'
     write_csv(states, file_name)
 
     return states[:, 0], states[:, 1], states[:, 2]
@@ -137,7 +137,7 @@ def do_thomas(dt: float, lle: float, limit: int):
     t = np.arange(0., limit, dt)
     states = odeint(thomas, initial_state, t)[1000:]
 
-    file_name = f'data/genthomas_{dt}_{lle}.csv'
+    file_name = f'data/thomas_{dt}_{lle}.csv'
     write_csv(states, file_name)
 
     return states[:, 0], states[:, 1], states[:, 2]
@@ -158,7 +158,7 @@ def do_mackeyglass(dt: float, lle: float, limit: float):
     for i in range(tau + 1, int(limit)):
         data[i] = data[i - 1] + dt * (beta * (data[i - 1 - tau] / (1 + np.power(data[i - 1 - tau], n))) - gamma * data[i - 1])
 
-    np.savetxt(f'data/genmackeyglass_{dt}_{lle}.csv', data[100:])
+    np.savetxt(f'data/mackeyglass_{dt}_{lle}.csv', data[100:])
 
 
 def plot(xs, ys, zs, caption, save_to=None):
