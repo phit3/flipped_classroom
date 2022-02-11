@@ -112,7 +112,7 @@ class ModelManager:
         random.seed(seed)
 
     @staticmethod
-    def denormalize( data, mean, std):
+    def denormalize(data, mean, std):
         denormalized_data = data * std + mean
         return denormalized_data
 
