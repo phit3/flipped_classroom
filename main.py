@@ -111,7 +111,7 @@ if __name__ == '__main__':
                     print(f'Overriding {hp}: {old} -> {new}.')
                 hyperparameters[hp] = new
 
-        for model_name in args.model_name:
+        for model_name in args.model_class_name:
             try:
                 model_class = eval(model_name)
                 if not quiet:
