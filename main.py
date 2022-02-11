@@ -103,9 +103,9 @@ if __name__ == '__main__':
             print(f'[WARNING] Did not find any predefined hyperparameters for {dataset} - using default set as basis.')
             hyperparameters = hyperparameter_sets['default']
 
-        for hp, old in hyperparameters.items():
-            if hp in override_args:
-                new = override_args[hp]
+        for hp, new in override_args.items():
+            if hp in hyperparameters:
+                old = hyperparameters[hp]
                 if not quiet:
                     print(f'Overriding {hp}: {old} -> {new}.')
                 hyperparameters[hp] = new
