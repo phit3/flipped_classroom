@@ -198,19 +198,22 @@ if __name__ == '__main__':
     args = parser.parse_args()
     force = args.force
 
-    systems: Dict[str, Tuple[float, float, Callable]] = {'roessler': (0.12, 0.069, do_roessler),
-                                          'lorenz': (0.01, 0.905, do_lorenz),
-                                          'lorenz96': (0.05, 1.67, do_lorenz96),
-                                          'thomas': (0.1, 0.055, do_thomas),
-                                          'mackeyglass': (1.0, 0.006, do_mackeyglass),
-                                          'hyperroessler': (0.1, 0.14, do_hyperroessler)}
+    systems: Dict[str, Tuple[float, float, float, Callable]] = {'roessler': (0.12, 0.069, None, do_roessler),
+                                          'lorenz': (0.01, 0.905, 12115300, do_lorenz),
+                                          'lorenz96': (0.05, 1.67, 8098800, do_lorenz96),
+                                          'thomas': (0.1, 0.055, 16589900, do_thomas),
+                                          'mackeyglass': (1.0, 0.006, 15833232, do_mackeyglass),
+                                          'hyperroessler': (0.1, 0.14, 11010420, do_hyperroessler)}
 
-    for system, (dt, lle, fn) in systems.items():
+    for system, (dt, lle, sample_limit, fn) in systems.items():
         input_steps = 150.0
         samples = 10000
-        output_steps = int(np.ceil(1.0 / lle / dt))
+        output_steps = 1.0 / lle / dt
         safety_factor = 5.0
-        max_limit = int(samples * (input_steps + output_steps) * safety_factor * dt)
+        if sample_limit:
+            max_limit = sample_limit * dt
+        else:
+            max_limit = int(samples * (input_steps + output_steps) * safety_factor * dt)
 
         print(f'Generating data from {system} with an LLE of {lle} and a dt of {dt}:')
         print(f'> ... {int((input_steps + output_steps) * samples * safety_factor)} states')
