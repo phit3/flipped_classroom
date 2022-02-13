@@ -199,22 +199,23 @@ if __name__ == '__main__':
     force = args.force
 
     systems: Dict[str, Tuple[float, float, Callable]] = {'roessler': (0.12, 0.069, do_roessler),
-                                          'lorenz': (0.01, 0.905, do_lorenz),
-                                          'lorenz96': (0.05, 1.67, do_lorenz96),
-                                          'thomas': (0.1, 0.055, do_thomas),
-                                          'mackeyglass': (1.0, 0.006, do_mackeyglass),
-                                          'hyperroessler': (0.1, 0.14, do_hyperroessler)}
+                                          #'lorenz': (0.01, 0.905, do_lorenz),
+                                          #'lorenz96': (0.05, 1.67, do_lorenz96),
+                                          #'thomas': (0.1, 0.055, do_thomas),
+                                          #'mackeyglass': (1.0, 0.006, do_mackeyglass),
+                                          #'hyperroessler': (0.1, 0.14, do_hyperroessler)
+                                                         }
 
     for system, (dt, lle, fn) in systems.items():
-        input_steps = 150.0
+        input_steps = 150
         samples = 10000
-        theo_output_steps = 1.0 / lle / dt
-        output_steps = int(np.ceil(theo_output_steps))
+        frac_output_steps = 1.0 / lle / dt
+        output_steps = int(np.ceil(frac_output_steps))
         safety_factor = 5.0
-        max_limit = int(samples * (input_steps + theo_output_steps) * safety_factor * dt)
+        max_limit = int(samples * (input_steps + frac_output_steps) * safety_factor * dt)
 
         print(f'Generating data from {system} with an LLE of {lle} and a dt of {dt}:')
-        print(f'> ... {int((input_steps + output_steps) * samples * safety_factor)} states')
+        print(f'> ... {int((input_steps + frac_output_steps) * samples * safety_factor)} states')
         print(f'> ... {samples} samples with a safety_factor of {safety_factor}')
         print(f'> ... {input_steps} input_steps')
         print(f'> ... {output_steps} output_steps')
