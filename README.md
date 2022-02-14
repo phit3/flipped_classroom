@@ -2,12 +2,12 @@
 > Replication package for: Flipped Classroom: Effective Teaching for Chaotic Time Series Forecasting
 
 ## Preparing Run
-### Setup Directory Structure
+### Setting up Directory Structure
   - creating data directory
     ```bash
     mkdir data
     ```
-### Install Requirements
+### Installing Requirements
   - using pip3 to install required python3 libraries
     ```bash
     pip3 install -r requirements.txt
