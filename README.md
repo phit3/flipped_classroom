@@ -61,7 +61,7 @@
     ```  
   - starting a training using an increasing linear curriculum learning strategy (CL_ITF_P_Lin) for the three datasets lorenz, mackeyglass and roessler saving weights tagged with 'back_to_the_future'
     ```bash
-    python3 main.py --tag back_to_the_future --operation train --models CL_ITF_P_Lin --datasets \\
-         lorenz_0.01_0.905 \\
+    python3 main.py --tag back_to_the_future --operation train \\
+          --models CL_ITF_P_Lin --datasets lorenz_0.01_0.905 \\
          '{"mackeyglass_1.0_0.006": {"lr": 1e-2}, "roessler_0.12_0.069": {"plateau": 30}}'
     ```
