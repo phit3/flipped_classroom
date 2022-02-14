@@ -199,11 +199,11 @@ if __name__ == '__main__':
     force = args.force
 
     systems: Dict[str, Tuple[float, float, Callable]] = {'roessler': (0.12, 0.069, do_roessler),
-                                          #'lorenz': (0.01, 0.905, do_lorenz),
-                                          #'lorenz96': (0.05, 1.67, do_lorenz96),
-                                          #'thomas': (0.1, 0.055, do_thomas),
-                                          #'mackeyglass': (1.0, 0.006, do_mackeyglass),
-                                          #'hyperroessler': (0.1, 0.14, do_hyperroessler)
+                                                         'lorenz': (0.01, 0.905, do_lorenz),
+                                                         'lorenz96': (0.05, 1.67, do_lorenz96),
+                                                         'thomas': (0.1, 0.055, do_thomas),
+                                                         'mackeyglass': (1.0, 0.006, do_mackeyglass),
+                                                         'hyperroessler': (0.1, 0.14, do_hyperroessler)
                                                          }
 
     for system, (dt, lle, fn) in systems.items():
