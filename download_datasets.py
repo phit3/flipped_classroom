@@ -5,7 +5,6 @@ import zipfile
 from io import BytesIO
 import numpy as np
 import requests
-import pandas as pd
 from typing import Dict, Union, Tuple
 
 
@@ -69,7 +68,7 @@ if __name__ == '__main__':
         safety_factor = 5.0
         max_limit = int(samples * (input_steps + frac_output_steps) * safety_factor * dt)
 
-        print(f'Downloading dataset {system} with an LLE of {lle} and a dt of {dt}:')
+        print(f'Downloading dataset {system} with an LLE of {lle} and a step width of {dt}:')
         print(f'> ... {int((input_steps + frac_output_steps) * samples * safety_factor)} states')
         print(f'> ... {samples} samples with a safety_factor of {safety_factor}')
         print(f'> ... {input_steps} input_steps')
