@@ -19,7 +19,7 @@ def download_file(urls: str, filename: str) -> None:
                 r.raise_for_status()
                 content_length = r.headers.get('Content-Length')
                 if content_length:
-                    max_chunks = int(content_length) // chunk_size
+                    max_chunks = int(np.ceil(int(content_length) / chunk_size))
                 else:
                     max_chunks = None
                 chunk_count = 0
