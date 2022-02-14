@@ -53,13 +53,13 @@ if __name__ == '__main__':
 
     systems: Dict[str, Tuple[float, float, Union[Tuple, str]]] = {
         'roessler': (0.12, 0.069, 'https://dataverse.harvard.edu/api/access/datafile/5677685'),
-        #'lorenz': (0.01, 0.905, 'https://dataverse.harvard.edu/api/access/datafile/5677683'),
-        #'lorenz96': (0.05, 1.67, ('https://dataverse.harvard.edu/api/access/datafile/5677686',
-        #                          'https://dataverse.harvard.edu/api/access/datafile/5677687')),
-        #'thomas': (0.1, 0.055, 'https://dataverse.harvard.edu/api/access/datafile/5677682'),
-        #'mackeyglass': (1.0, 0.006, 'https://dataverse.harvard.edu/api/access/datafile/5677684'),
-        #'hyperroessler': (0.1, 0.14, 'https://dataverse.harvard.edu/api/access/datafile/5677688')
-                                                         }
+        'lorenz': (0.01, 0.905, 'https://dataverse.harvard.edu/api/access/datafile/5677683'),
+        'lorenz96': (0.05, 1.67, ('https://dataverse.harvard.edu/api/access/datafile/5677686',
+                                  'https://dataverse.harvard.edu/api/access/datafile/5677687')),
+        'thomas': (0.1, 0.055, 'https://dataverse.harvard.edu/api/access/datafile/5677682'),
+        'mackeyglass': (1.0, 0.006, 'https://dataverse.harvard.edu/api/access/datafile/5677684'),
+        'hyperroessler': (0.1, 0.14, 'https://dataverse.harvard.edu/api/access/datafile/5677688')
+    }
 
     for system, (dt, lle, urls) in systems.items():
         input_steps = 150
