@@ -12,11 +12,11 @@ from models.cl_itf import CL_ITF_P_Lin, CL_ITF_P_InvSig, CL_ITF_P_Exp, CL_ITF_D_
 
 if __name__ == '__main__':
     parser = argparse.ArgumentParser(description='Replication package for: Flipped Classroom: Effective Teaching for Chaotic Time Series Forecasting.')
-    parser.add_argument('-m', '--models', dest='model_class_name', action='extend', nargs='+', default=[],
+    parser.add_argument('-m', '--models', dest='model_class_name', action='append', nargs='+', default=[],
                         help='class name(s) of the model(s) to train or test.')
     parser.add_argument('-o', '--operation', dest='operation', default='test', choices=['train', 'test'], help='operation that shall be performed.')
 
-    parser.add_argument('-d', '--datasets', dest='dataset', action='extend', nargs='+', default=[],
+    parser.add_argument('-d', '--datasets', dest='dataset', action='append', nargs='+', default=[],
                         help='datasets to be processed optionally together with the desired hyperparameters in JSON format (e.g. \'{"thomas_0.1_0.055": {"gamma": 0.6, "lr": 1e-3, "plateau": 10, "latent_dim": 256, "output_steps": 182}}\').')
     parser.add_argument('-t', '--tag', dest='tag', type=str, default='test', help='tag that identifies a set of experiments')
     parser.add_argument('-q', '--quiet', dest='quiet', default=False, action='store_true', help='reduces noise on your command line.')

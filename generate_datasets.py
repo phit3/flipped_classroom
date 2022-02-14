@@ -2,16 +2,13 @@
 import argparse
 import os
 from typing import Tuple
-
 import numpy as np
-import matplotlib.pyplot as plt
-from mpl_toolkits.mplot3d import Axes3D
 import pandas as pd
 from scipy.integrate import odeint
-from typing import Dict, Callable
+from typing import Dict, Callable, Union, Iterable
 
 
-def write_csv(states, file_name: str):
+def write_csv(states: Tuple[Union[np.ndarray, Iterable, int, float], dict], file_name: str) -> None:
     if os.path.exists(file_name) and not force:
         print(f'[ERROR] {file_name} already exists. Please remove/rename it or provide -f/--force to overwrite it.')
         exit(1)
@@ -25,7 +22,7 @@ def write_csv(states, file_name: str):
     df.to_csv(file_name, index=False)
 
 
-def hyperroessler(state: Tuple[float, float, float, float], t, a: float = 0.25, b: float = 3, c: float = 0.5, d: float = 0.05):
+def hyperroessler(state: Tuple[float, float, float, float], t, a: float = 0.25, b: float = 3, c: float = 0.5, d: float = 0.05) -> Tuple[float, float, float, float]:
     x, y, z, w = state
     x_dot = -(y + z)
     y_dot = x + a * y + w
@@ -34,7 +31,7 @@ def hyperroessler(state: Tuple[float, float, float, float], t, a: float = 0.25, 
     return x_dot, y_dot, z_dot, w_dot
 
 
-def do_hyperroessler(dt: float, lle: float, limit: float):
+def do_hyperroessler(dt: float, lle: float, limit: float) -> Tuple:
     global force
     initial_state = (-10, -14, 0.3, 29)
     t = np.arange(0.0, limit, dt)
@@ -46,7 +43,7 @@ def do_hyperroessler(dt: float, lle: float, limit: float):
     return states[:, 0], states[:, 1], states[:, 2], states[:, 3]
 
 
-def roessler(state: Tuple[float, float, float], t, a: float = 0.2, b: float = 0.2, c: float = 5.7):
+def roessler(state: Tuple[float, float, float], t, a: float = 0.2, b: float = 0.2, c: float = 5.7) -> Tuple[float, float, float]:
     x, y, z = state
     x_dot = -(y + z)
     y_dot = x + a * y
@@ -54,7 +51,7 @@ def roessler(state: Tuple[float, float, float], t, a: float = 0.2, b: float = 0.
     return x_dot, y_dot, z_dot
 
 
-def do_roessler(dt: float, lle: float, limit: float):
+def do_roessler(dt: float, lle: float, limit: float) -> Tuple:
     global force
     # Set initial values
     initial_state = (1., 1., 1.)
@@ -67,7 +64,7 @@ def do_roessler(dt: float, lle: float, limit: float):
     return states[:, 0], states[:, 1], states[:, 2]
 
 
-def lorenz(state, t, r: float = 28.0, s: float = 10.0, b: float = 8.0 / 3.0) -> (float, float, float):
+def lorenz(state, t, r: float = 28.0, s: float = 10.0, b: float = 8.0 / 3.0) -> Tuple[float, float, float]:
     x, y, z = state
     x_dot = s * (y - x)
     y_dot = x * (r - z) - y
@@ -75,7 +72,7 @@ def lorenz(state, t, r: float = 28.0, s: float = 10.0, b: float = 8.0 / 3.0) -> 
     return x_dot, y_dot, z_dot
 
 
-def do_lorenz(dt: float, lle: float, limit: float):
+def do_lorenz(dt: float, lle: float, limit: float) -> Tuple:
     global force
     # Set initial values
     initial_state = (1., 1., 0.0)
@@ -88,7 +85,7 @@ def do_lorenz(dt: float, lle: float, limit: float):
     return states[:, 0], states[:, 1], states[:, 2]
 
 
-def lorenz96(x, t, F: int = 8, N: int = 40):
+def lorenz96(x, t, F: int = 8, N: int = 40) -> Tuple:
     states = np.zeros(N)
     states[0] = (x[1] - x[N-2]) * x[N-1] - x[0]
     states[1] = (x[2] - x[N-1]) * x[0] - x[1]
@@ -100,7 +97,7 @@ def lorenz96(x, t, F: int = 8, N: int = 40):
     return states
 
 
-def do_lorenz96(dt: float, lle: float, limit: float, F: int = 8, N: int = 40):
+def do_lorenz96(dt: float, lle: float, limit: float, F: int = 8, N: int = 40) -> Tuple:
     global force
     x0 = np.array(
         [4.576779242071500331e-01, 8.057981139137008197e-01, 5.936302860531461612e-01, 7.022680033563672986e-01,
@@ -122,7 +119,7 @@ def do_lorenz96(dt: float, lle: float, limit: float, F: int = 8, N: int = 40):
     return states[:, 0], states[:, 1], states[:, 2]
 
 
-def thomas(state, t, b: float = 0.1):
+def thomas(state, t, b: float = 0.1) -> Tuple[float, float, float]:
     x, y, z = state
     x_dot = np.sin(y) - b * x
     y_dot = np.sin(z) - b * y
@@ -131,7 +128,7 @@ def thomas(state, t, b: float = 0.1):
     return x_dot, y_dot, z_dot
 
 
-def do_thomas(dt: float, lle: float, limit: int):
+def do_thomas(dt: float, lle: float, limit: int) -> Tuple:
     global force
     initial_state = (0.0, 1.0, 0.0)
     t = np.arange(0., limit, dt)
@@ -143,7 +140,7 @@ def do_thomas(dt: float, lle: float, limit: int):
     return states[:, 0], states[:, 1], states[:, 2]
 
 
-def do_mackeyglass(dt: float, lle: float, limit: float):
+def do_mackeyglass(dt: float, lle: float, limit: float) -> Tuple:
     global force
     beta = 0.2
     gamma = 0.1
@@ -159,36 +156,6 @@ def do_mackeyglass(dt: float, lle: float, limit: float):
         data[i] = data[i - 1] + dt * (beta * (data[i - 1 - tau] / (1 + np.power(data[i - 1 - tau], n))) - gamma * data[i - 1])
 
     np.savetxt(f'data/mackeyglass_{dt}_{lle}.csv', data[100:])
-
-
-def plot(xs, ys, zs, caption, save_to=None):
-    fig = plt.figure()
-    ax = fig.gca(projection='3d')
-
-    ax.plot(xs, ys, zs, lw=0.5)
-    ## for thomas b=0.32899
-    #ax.set_xticks(np.arange(2.20, 2.36, 0.05))
-    #ax.set_xlim(2.225, 2.35)
-    #ax.set_yticks(np.arange(2.20, 2.36, 0.05))
-    #ax.set_ylim(2.225, 2.35)
-    #ax.set_zticks(np.arange(2.20, 2.36, 0.05))
-    #ax.set_zlim(2.225, 2.35)
-    ## for thomas b=0.1
-    ax.set_xticks(np.arange(-4, 5, 2))
-    ax.set_xlim(-5.5, 5.5)
-    ax.set_yticks(np.arange(-4, 5, 2))
-    ax.set_ylim(-5.5, 5.5)
-    ax.set_zticks(np.arange(-4, 5, 2))
-    ax.set_zlim(-5.5, 5.5)
-    #plt.axis('off')
-    #ax.set_xlabel("X Axis")
-    #ax.set_ylabel("Y Axis")
-    #ax.set_zlabel("Z Axis")
-    #ax.set_title(caption)
-
-    #plt.show()
-    if save_to is not None:
-        plt.savefig(save_to, bbox_inches='tight', pad_inches=0)
 
 
 if __name__ == '__main__':

@@ -13,30 +13,9 @@
     pip3 install -r requirements.txt
     ```
 ### Downloading Data
-  - entering data directory
+  - executing data download script
     ```bash
-    cd data
-    ```
-  - download data from here: https://doi.org/10.7910/DVN/YEIZDT
-  - unzip and put together the lorenz96N40 data parts
-    ```bash
-    unzip lorenz96N40_0.05_part1.csv.zip
-    unzip lorenz96N40_0.05_part2.csv.zip
-    cat lorenz96N40_0.05_part1.csv lorenz96N40_0.05_part2.csv > lorenz96_0.05.csv
-    rm lorenz96N40_0.05_part*
-    ```
-  - rename some data files for compatibility reasons
-    ```bash
-    mv hyperroessler_0.1.csv hyperroessler_0.1_0.14.csv
-    mv lorenz96_0.05.csv lorenz96_0.05_1.67.csv
-    mv lorenz_0.01.csv lorenz_0.01_0.905.csv
-    mv mackeyglass_1.0.csv mackeyglass_1.0_0.006.csv
-    mv roessler_0.12.csv roessler0.12_0.069.csv
-    mv thomas_0.1.csv thomas_0.1_0.055.csv
-    ```
-  - go back to root directory
-    ```bash
-    cd ..
+    python3 download_datasets.py
     ```
 ### Alternative: Generating Data
   - executing data generation script
@@ -56,12 +35,12 @@
     ```
   - starting a training with TF on the mackeyglass and the roessler dataset while overriding some default hyperparameters (lr and plateau) saving weights tagged with 'the_future'
     ```bash
-    python3 main.py --tag the_future --operation train --models TF --datasets \\
+    python3 main.py --tag the_future --operation train --models TF --datasets \
             '{"mackeyglass_1.0_0.006": {"lr": 1e-2}, "roessler_0.12_0.069": {"plateau": 30}}'
     ```  
   - starting a training using an increasing linear curriculum learning strategy (CL_ITF_P_Lin) for the three datasets lorenz, mackeyglass and roessler saving weights tagged with 'back_to_the_future'
     ```bash
-    python3 main.py --tag back_to_the_future --operation train \\
-          --models CL_ITF_P_Lin --datasets lorenz_0.01_0.905 \\
+    python3 main.py --tag back_to_the_future --operation train \
+          --models CL_ITF_P_Lin --datasets lorenz_0.01_0.905 \
          '{"mackeyglass_1.0_0.006": {"lr": 1e-2}, "roessler_0.12_0.069": {"plateau": 30}}'
     ```
