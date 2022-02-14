@@ -3,12 +3,12 @@
 
 ## Preparing Run
 ### Setup Directory Structure
-  - create data directory
+  - creating data directory
     ```bash
     mkdir data
     ```
 ### Install Requirements
-  - use pip3 to install required python3 libraries
+  - using pip3 to install required python3 libraries
     ```bash
     pip3 install -r requirements.txt
     ```
@@ -24,7 +24,7 @@
     ```
 ## Running Run
 ### In Times of Need
-  - ask for help
+  - getting help
     ```bash
     python3 main.py --help
     ```
