@@ -60,6 +60,7 @@ if __name__ == '__main__':
         'hyperroessler': (0.1, 0.14, 'https://dataverse.harvard.edu/api/access/datafile/5677688')
     }
 
+    os.makedirs('data', exist_ok=True)
     for system, (dt, lle, urls) in systems.items():
         input_steps = 150
         samples = 10000
@@ -77,7 +78,7 @@ if __name__ == '__main__':
         file_name = f'data/{system}_{dt}_{lle}.csv'
         if os.path.exists(file_name) and not force:
             print(f'[ERROR] {file_name} already exists. Please remove/rename it or provide -f/--force to overwrite it.')
-            exit(1)
+            continue
         elif os.path.exists(file_name) and force:
             print(f'[INFO] overwriting dataset in {file_name} with generated data.')
 

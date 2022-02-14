@@ -4,3 +4,4 @@ pandas
 scipy
 torch
 requests
+prettytable

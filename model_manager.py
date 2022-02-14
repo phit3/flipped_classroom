@@ -173,9 +173,7 @@ class ModelManager:
             self.cond_print('decay: {} looks strange'.format(decay))
 
         self.cond_print('> computing metrics')
-        self.compute_metrics(model=model, strategy=strategy, curriculum=decay, predictions=predictions, realities=realities)
-
-        return predictions, realities
+        return [generators.system] + self.compute_metrics(model=model, strategy=strategy, curriculum=decay, predictions=predictions, realities=realities)
 
     def plot_history(self, model: Base, system: str, epoch: int, base_filename: str, save_plot: bool = True, suffix='jpg', fix_scale=False):
         history_filename = 'history.csv'
@@ -320,10 +318,7 @@ class ModelManager:
         last_10_nrmse = Evaluation.m_nrmse_of_steps(predictions=torch.tensor(predictions), targets=torch.tensor(realities), norm_value=model.generators.std.mean(), from_step=-to_steps)
         r2s, lt_r2_09 = Evaluation.median_r2_scores(torch.tensor(predictions), torch.tensor(realities), step_width=model.generators.step_width, lle=model.generators.lle, limit=0.9)
         r2 = r2s[-1]
-        if self.quiet:
-            print(f'strategy: {strategy} - curriculum: {curriculum} - NRMSE: {nrmse}, R2: {r2}, last 10% NRMSE: {last_10_nrmse}')
-        else:
-            print(f'{strategy},{curriculum},{nrmse},{r2},{last_10_nrmse}')
+        return [strategy, curriculum, round(nrmse, 6), round(r2, 6), round(last_10_nrmse, 6)]
 
     def load_latest_checkpoint(self, tag: str):
         max_epoch = 0

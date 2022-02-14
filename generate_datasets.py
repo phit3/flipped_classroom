@@ -9,11 +9,6 @@ from typing import Dict, Callable, Union, Iterable
 
 
 def write_csv(states: Tuple[Union[np.ndarray, Iterable, int, float], dict], file_name: str) -> None:
-    if os.path.exists(file_name) and not force:
-        print(f'[ERROR] {file_name} already exists. Please remove/rename it or provide -f/--force to overwrite it.')
-        exit(1)
-    elif os.path.exists(file_name) and force:
-        print(f'[INFO], overwriting dataset in {file_name} with generated data.')
     columns = []
     for i, _ in enumerate(np.transpose(states)):
         columns.append('x_{}'.format(i))
@@ -31,14 +26,13 @@ def hyperroessler(state: Tuple[float, float, float, float], t, a: float = 0.25, 
     return x_dot, y_dot, z_dot, w_dot
 
 
-def do_hyperroessler(dt: float, lle: float, limit: float) -> Tuple:
+def do_hyperroessler(filename: str, dt: float, lle: float, limit: float) -> Tuple:
     global force
     initial_state = (-10, -14, 0.3, 29)
     t = np.arange(0.0, limit, dt)
     states = odeint(hyperroessler, initial_state, t)
 
-    file_name = f'data/hyperroessler_{dt}_{lle}.csv'
-    write_csv(states, file_name)
+    write_csv(states, filename)
 
     return states[:, 0], states[:, 1], states[:, 2], states[:, 3]
 
@@ -51,15 +45,14 @@ def roessler(state: Tuple[float, float, float], t, a: float = 0.2, b: float = 0.
     return x_dot, y_dot, z_dot
 
 
-def do_roessler(dt: float, lle: float, limit: float) -> Tuple:
+def do_roessler(filename: str, dt: float, lle: float, limit: float) -> Tuple:
     global force
     # Set initial values
     initial_state = (1., 1., 1.)
     t = np.arange(0.0, limit, dt)
     states = odeint(roessler, initial_state, t)
 
-    file_name = f'data/roessler_{dt}_{lle}.csv'
-    write_csv(states, file_name)
+    write_csv(states, filename)
 
     return states[:, 0], states[:, 1], states[:, 2]
 
@@ -72,15 +65,14 @@ def lorenz(state, t, r: float = 28.0, s: float = 10.0, b: float = 8.0 / 3.0) -> 
     return x_dot, y_dot, z_dot
 
 
-def do_lorenz(dt: float, lle: float, limit: float) -> Tuple:
+def do_lorenz(filename: str, dt: float, lle: float, limit: float) -> Tuple:
     global force
     # Set initial values
     initial_state = (1., 1., 0.0)
     t = np.arange(0., limit, dt)
     states = odeint(lorenz, initial_state, t)
 
-    file_name = f'data/lorenz_{dt}_{lle}.csv'
-    write_csv(states, file_name)
+    write_csv(states, filename)
 
     return states[:, 0], states[:, 1], states[:, 2]
 
@@ -97,7 +89,7 @@ def lorenz96(x, t, F: int = 8, N: int = 40) -> Tuple:
     return states
 
 
-def do_lorenz96(dt: float, lle: float, limit: float, F: int = 8, N: int = 40) -> Tuple:
+def do_lorenz96(filename: str, dt: float, lle: float, limit: float, F: int = 8, N: int = 40) -> Tuple:
     global force
     x0 = np.array(
         [4.576779242071500331e-01, 8.057981139137008197e-01, 5.936302860531461612e-01, 7.022680033563672986e-01,
@@ -113,8 +105,7 @@ def do_lorenz96(dt: float, lle: float, limit: float, F: int = 8, N: int = 40) ->
     t = np.arange(0.0, limit, dt)
     states = odeint(lorenz96, x0, t)
 
-    file_name = f'data/lorenz96_{dt}_{lle}.csv'
-    write_csv(states, file_name)
+    write_csv(states, filename)
 
     return states[:, 0], states[:, 1], states[:, 2]
 
@@ -128,19 +119,18 @@ def thomas(state, t, b: float = 0.1) -> Tuple[float, float, float]:
     return x_dot, y_dot, z_dot
 
 
-def do_thomas(dt: float, lle: float, limit: int) -> Tuple:
+def do_thomas(filename: str, dt: float, lle: float, limit: int) -> Tuple:
     global force
     initial_state = (0.0, 1.0, 0.0)
     t = np.arange(0., limit, dt)
     states = odeint(thomas, initial_state, t)[1000:]
 
-    file_name = f'data/thomas_{dt}_{lle}.csv'
-    write_csv(states, file_name)
+    write_csv(states, filename)
 
     return states[:, 0], states[:, 1], states[:, 2]
 
 
-def do_mackeyglass(dt: float, lle: float, limit: float) -> Tuple:
+def do_mackeyglass(filename: str, dt: float, lle: float, limit: float) -> None:
     global force
     beta = 0.2
     gamma = 0.1
@@ -155,7 +145,7 @@ def do_mackeyglass(dt: float, lle: float, limit: float) -> Tuple:
     for i in range(tau + 1, int(limit)):
         data[i] = data[i - 1] + dt * (beta * (data[i - 1 - tau] / (1 + np.power(data[i - 1 - tau], n))) - gamma * data[i - 1])
 
-    np.savetxt(f'data/mackeyglass_{dt}_{lle}.csv', data[100:])
+    np.savetxt(filename, data[100:])
 
 
 if __name__ == '__main__':
@@ -173,6 +163,7 @@ if __name__ == '__main__':
                                                          'hyperroessler': (0.1, 0.14, do_hyperroessler)
                                                          }
 
+    os.makedirs('data', exist_ok=True)
     for system, (dt, lle, fn) in systems.items():
         input_steps = 150
         samples = 10000
@@ -181,10 +172,17 @@ if __name__ == '__main__':
         safety_factor = 5.0
         max_limit = int(samples * (input_steps + frac_output_steps) * safety_factor * dt)
 
+        file_name = f'data/{system}_{dt}_{lle}.csv'
+        if os.path.exists(file_name) and not force:
+            print(f'[ERROR] {file_name} already exists. Please remove/rename it or provide -f/--force to overwrite it.')
+            continue
+        elif os.path.exists(file_name) and force:
+            print(f'[INFO], overwriting dataset in {file_name} with generated data.')
+
         print(f'Generating data from {system} with an LLE of {lle} and a dt of {dt}:')
         print(f'> ... {int((input_steps + frac_output_steps) * samples * safety_factor)} states')
         print(f'> ... {samples} samples with a safety_factor of {safety_factor}')
         print(f'> ... {input_steps} input_steps')
         print(f'> ... {output_steps} output_steps')
-        _ = fn(dt=dt, lle=lle, limit=max_limit)
+        _ = fn(filename=file_name, dt=dt, lle=lle, limit=max_limit)
         print(50 * '-')
