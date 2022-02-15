@@ -32,12 +32,12 @@
     ```bash
     python3 main.py --tag exploratory --operation test --models TF FR CL_CTF_P CL_DTF_P_Lin CL_DTF_P_InvSig CL_DTF_P_Exp \
                     CL_DTF_D_Lin CL_DTF_D_InvSig CL_DTF_D_Exp CL_ITF_P_Lin CL_ITF_P_InvSig CL_ITF_P_Exp CL_ITF_D_Lin CL_ITF_D_InvSig CL_ITF_D_Exp \
-                    --datasets mackeyglass thomas roessler hyperroessler lorenz lorenz96 --skip-missing --quiet
+                    --datasets thomas roessler lorenz lorenz96 --skip-missing --quiet
     ```
   - starting a test with all models and datasets of the 'essential' experiments.
     ```bash
     python3 main.py --tag essential --operation test --models TF FR CL_CTF_P CL_DTF_P_Lin CL_DTF_D_Lin CL_ITF_P_Lin CL_ITF_D_Lin \
-                    --datasets thomas roessler lorenz lorenz96 --quiet
+                    --datasets mackeyglass thomas roessler hyperroessler lorenz lorenz96 --quiet
     ```
   - starting a training with TF on the mackeyglass and the roessler dataset while overriding some default hyperparameters (lr and plateau) saving weights tagged with 'the_future'
     ```bash
