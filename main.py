@@ -19,11 +19,13 @@ if __name__ == '__main__':
     parser.add_argument('-d', '--datasets', dest='dataset', nargs='+',
                         help='datasets to be processed optionally together with the desired hyperparameters in JSON format (e.g. \'{"thomas_0.1_0.055": {"gamma": 0.6, "lr": 1e-3, "plateau": 10, "latent_dim": 256, "output_steps": 182}}\').')
     parser.add_argument('-t', '--tag', dest='tag', type=str, default='test', help='tag that identifies a set of experiments')
+    parser.add_argument('-s', '--skip-missing', dest='skip_missing', default=False, action='store_true', help='skips model-dataset combination tests for which no checkpoint is provided for the given tag')
     parser.add_argument('-q', '--quiet', dest='quiet', default=False, action='store_true', help='reduces noise on your command line.')
 
     args = parser.parse_args()
     operation = args.operation
     tag = args.tag
+    skip_missing = args.skip_missing
     quiet = args.quiet
 
     hyperparameter_sets = {'hyperroessler':
@@ -127,6 +129,7 @@ if __name__ == '__main__':
             hyperparameters[hp] = new
 
         for model_name in args.model_class_name:
+            #if os.path.isfile(os.path.join()
             try:
                 model_class = eval(model_name)
                 print('Running {} {} operation for {} on {}.'. format(tag, operation, model_name, dataset))
@@ -134,8 +137,16 @@ if __name__ == '__main__':
                 if operation == 'train':
                     mgr.train_model(override_args=hyperparameters)
                 elif operation == 'test':
-                    row = mgr.test_model(override_args=hyperparameters)
-                    metrics.add_row(row=row)
+                    try:
+                        row = mgr.test_model(override_args=hyperparameters)
+                        metrics.add_row(row=row)
+                    except FileNotFoundError as e:
+                        if skip_missing:
+                            if not quiet:
+                                print('> skipping')
+                            continue
+                        else:
+                            raise e
             except Exception as e:
                 error_type = type(e).__name__
                 print(f'{error_type}: {e}')

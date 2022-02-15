@@ -37,7 +37,7 @@
   - starting a test with all models and datasets of the 'essential' experiments.
     ```bash
     python3 main.py --tag essential --operation test --models TF FR CL_CTF_P CL_DTF_P_Lin CL_DTF_D_Lin CL_ITF_P_Lin CL_ITF_D_Lin \
-                    --datasets mackeyglass thomas roessler hyperroessler lorenz lorenz96 --quiet
+                    --datasets thomas roessler lorenz lorenz96 --quiet
     ```
   - starting a training with TF on the mackeyglass and the roessler dataset while overriding some default hyperparameters (lr and plateau) saving weights tagged with 'the_future'
     ```bash
