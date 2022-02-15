@@ -8,6 +8,22 @@ import requests
 from typing import Dict, Union, Tuple
 
 
+def progress_bar(progress: int, limit: int = None):
+    max_len = 50
+    if limit:
+        bar_len = int(max_len * progress / limit)
+    else:
+        bar_len = progress % max_len
+
+    bar = bar_len * '='
+    space = int(max_len - bar_len) * ' '
+
+    if bar_len < max_len:
+        print(f'\r{progress}/{limit} [{bar}{space}]', end='', flush=True)
+    else:
+        print(f'\r{progress}/{limit} [{bar}]')
+
+
 def download_file(urls: str, filename: str) -> None:
     chunk_size = 8192
     with open(filename, 'wb') as f:
@@ -25,16 +41,8 @@ def download_file(urls: str, filename: str) -> None:
                 for chunk in r.iter_content(chunk_size=chunk_size):
                     zip_data.write(chunk)
                     chunk_count += 1
-                    max_len = 100
-                    if max_chunks:
-                        bar_len = int(max_len * chunk_count / max_chunks)
-                    else:
-                        bar_len = chunk_count % max_len
-                    bar = bar_len * '='
-                    space = int(max_len - bar_len) * ' '
-                    print(f'\r{chunk_count}/{max_chunks} [{bar}{space}]', end='', flush=True)
-                bar = max_len * '='
-                print(f'\r{chunk_count}/{max_chunks} [{bar}]')
+                    progress_bar(chunk_count, max_chunks)
+                progress_bar(max_chunks, max_chunks)
                 if zipfile.is_zipfile(filename=zip_data):
                     with zipfile.ZipFile(zip_data) as zip_file:
                         data = zip_file.open(zip_file.namelist()[0]).read()
