@@ -1,5 +1,6 @@
 #!/usr/bin/python3
 import argparse
+import os
 import re
 import json
 from prettytable import PrettyTable
@@ -129,24 +130,23 @@ if __name__ == '__main__':
             hyperparameters[hp] = new
 
         for model_name in args.model_class_name:
-            #if os.path.isfile(os.path.join()
+            checkpoint_dir = os.path.join('results', tag, model_name, dataset, 'checkpoints')
+            if operation == 'train' or os.path.isfile(os.path.join(checkpoint_dir, 'encoder')) and os.path.isfile(
+                    os.path.join(checkpoint_dir, 'decoder')):
+                print('Running {} {} operation for {} on {}.'. format(tag, operation, model_name, dataset))
+            elif skip_missing:
+                continue
+            else:
+                print(f'[ERROR] Could not find required checkpoints in {checkpoint_dir}. If you wish to ignore this error use -s/--skip-missing')
+                continue
             try:
                 model_class = eval(model_name)
-                print('Running {} {} operation for {} on {}.'. format(tag, operation, model_name, dataset))
                 mgr = ModelManager(model_class=model_class, dataset=filename, tag=tag, quiet=quiet)
                 if operation == 'train':
                     mgr.train_model(override_args=hyperparameters)
                 elif operation == 'test':
-                    try:
-                        row = mgr.test_model(override_args=hyperparameters)
-                        metrics.add_row(row=row)
-                    except FileNotFoundError as e:
-                        if skip_missing:
-                            if not quiet:
-                                print('> skipping')
-                            continue
-                        else:
-                            raise e
+                    row = mgr.test_model(override_args=hyperparameters)
+                    metrics.add_row(row=row)
             except Exception as e:
                 error_type = type(e).__name__
                 print(f'{error_type}: {e}')
