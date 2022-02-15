@@ -101,6 +101,12 @@ if __name__ == '__main__':
 
     metrics = PrettyTable()
     metrics.field_names = ['Dataset', 'Strategy', 'Curriculum', 'NRMSE', 'R2', 'Last 10% NRMSE']
+    metrics.align['Dataset'] = 'l'
+    metrics.align['Strategy'] = 'l'
+    metrics.align['Curriculum'] = 'l'
+    metrics.align['NRMSE'] = 'r'
+    metrics.align['R2'] = 'r'
+    metrics.align['Last 10% NRMSE'] = 'r'
     for dataset, override_args in datasets.items():
         dataset = re.sub(r'.csv$', '', dataset)
         if not override_args:
