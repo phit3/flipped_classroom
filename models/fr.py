@@ -106,14 +106,14 @@ class FR(Base):
             self.linear = nn.Linear(self.latent_dim, self.dimensions)
 
         @torch.jit.script_method
-        def forward(self, teacher_forcing_probability: float, randoms: List[float], next_input: torch.Tensor,
+        def forward(self, tf_ratio: float, randoms: List[float], next_input: torch.Tensor,
                     targets: torch.Tensor, states: torch.Tensor) -> Tuple[torch.Tensor, torch.Tensor]:
             predictions = []
             for j in range(self.output_steps):
                 decoder_gru_out, states = self.decoder_gru(next_input.view(1, self.batch_size, -1), states)
                 decoder_output = self.linear(decoder_gru_out)
 
-                use_teacher_forcing = randoms[j] < teacher_forcing_probability
+                use_teacher_forcing = randoms[j] < tf_ratio
                 predictions.append(decoder_output)
                 if use_teacher_forcing:
                     next_input = targets[j].view(1, self.batch_size, -1)
@@ -153,7 +153,7 @@ class FR(Base):
     def next_tf_ratio(self):
         self.tf_ratio = 0.0
 
-    def _do_batch(self, epoch, batch_number, batch, max_batch_number, teacher_forcing_probability, randoms):
+    def _do_batch(self, epoch, batch_number, batch, max_batch_number, tf_ratio, randoms):
         self.print_progress(epoch, batch_number, max_batch_number)
         (encoder_inputs, decoder_inputs), targets = batch
         encoder_inputs = np.swapaxes(encoder_inputs, 0, 1)
@@ -162,7 +162,7 @@ class FR(Base):
                                                                          self.batch_size, -1), initial_states)
         targets = torch.tensor(np.swapaxes(targets, 0, 1)).view(self.output_steps, self.batch_size, -1)
         first_input = torch.tensor(encoder_inputs[-1]).view(1, self.batch_size, -1)
-        predictions, states = self.decoder_model(teacher_forcing_probability,
+        predictions, states = self.decoder_model(tf_ratio,
                                                  randoms, first_input, targets, states)
         loss = 0
         for p, t in zip(predictions, targets):
