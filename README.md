@@ -26,7 +26,7 @@
 ### Examples
   - starting a test the model trained with teacher forcing (TF) the lorenz' dataset using weights tagged with 'essential'.
     ```bash
-    python3 main.py --tag essential --operation test --models TF --datasets lorenz_0.01_0.905 --quiet
+    python3 main.py --tag essential --operation test --models TF --datasets lorenz --quiet
     ```
   - starting a test with all models and datasets of the 'exploratory' experiments.
     ```bash
