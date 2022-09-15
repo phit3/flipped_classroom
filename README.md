@@ -1,5 +1,5 @@
 # Flipped Classroom
-> Replication package for: Flipped Classroom: Effective Teaching for Time Series Forecasting
+> Reproduction package for: Flipped Classroom: Effective Teaching for Time Series Forecasting
 
 ## Preparing Run
 ### Installing Requirements
